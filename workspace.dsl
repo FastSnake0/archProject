@@ -5,8 +5,6 @@ workspace {
     # включаем режим с иерархической системой идентификаторов
     !identifiers hierarchical
 
-    !docs documentation
-    !adrs decisions
     # Модель архитектуры
     model {
 
@@ -162,26 +160,33 @@ workspace {
             autoLayout
             user -> social.client_service "Создать пост (POST /user/post)"
             social.client_service -> social.user_service "Проверка аутентификации пользователя" 
-            social.user_service -> social.post_database "Сохранить пост"
+            social.user_service -> social.post_service
+            social.post_service -> social.content_database "Сохранить пост"
+
         }
 
         dynamic social "UC12" "Загрузка стены пользователя" {
             autoLayout
             user -> social.client_service "Загрузка постов пользователя (GET /user/post)"
-            social.client_service -> social.user_service "Сохранить данные о пользователе" 
-            social.user_service -> social.post_service "Сохранить данные о пользователе"
+            social.client_service -> social.user_service "Проверка аутентификации пользователя" 
+            social.user_service -> social.post_service
+            social.post_service -> social.content_database "Загрузить стену пользователя"
         }
 
         dynamic social "UC21" "Отправка сообщения пользователю" {
             autoLayout
-            user -> social.client_service "Создать нового пользователя (GET /user)"
-            social.user_service -> social.user_database "Сохранить данные о пользователе" 
+            user -> social.client_service "Отправить сообщение (POST /user/chat)"
+            social.client_service -> social.user_service "Проверка аутентификации пользователя" 
+            social.user_service -> social.chat_service
+            social.chat_service -> social.content_database "Отправить сообщение"
         }
 
         dynamic social "UC22" "Получение списка сообщения для пользователя" {
             autoLayout
-            user -> social.client_service "Создать нового пользователя (GET /user)"
-            social.user_service -> social.user_database "Сохранить данные о пользователе" 
+            user -> social.client_service "Отправить сообщение (POST /user/chat)"
+            social.client_service -> social.user_service "Проверка аутентификации пользователя" 
+            social.user_service -> social.chat_service
+            social.chat_service -> social.content_database "Загрузить переписку"
         }
 
 
