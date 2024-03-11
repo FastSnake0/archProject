@@ -1,4 +1,5 @@
 .structurizr/*
 workspace.json
+c4-language-server.log
 structurizr_on_premises/onpremises/*
 .DS_Store
