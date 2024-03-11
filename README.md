@@ -40,18 +40,17 @@
    - [x] - Должно быть несколько динамических диаграмм
 ### Архитектура
 
-<img src = "documentation/images/structurizr-SystemContext.png" width ="500" /> <img src = "documentation/images/structurizr-Container.png" width ="500" />
-
-<img src = "documentation/images/structurizr-deployment.png" width ="705" />
+<img src = "documentation/images/structurizr-SystemContext.png" width ="300" /> <img src = "documentation/images/structurizr-Container.png" width ="300" />
+<img src = "documentation/images/structurizr-deployment.png" width ="695" />
 
 #### Динамические диаграммы
 
-![Создание нового пользователя](documentation/images/structurizr-UC01.png)
-![Поиск пользователя по логину](documentation/images/structurizr-UC02.png)
-![Поиск пользователя по маске имя и фамилии](documentation/images/structurizr-UC03.png)
+<img src = "documentation/images/structurizr-UC01.png" width ="400" />
+<img src = "documentation/images/structurizr-UC02.png" width ="300" />
+<img src = "documentation/images/structurizr-UC03.png" width ="300" />
 
-![Добавление записи на стену](documentation/images/structurizr-UC11.png)
-![Загрузка стены пользователя](documentation/images/structurizr-UC12.png)
+<img src = "documentation/images/structurizr-UC11.png" width ="300" />
+<img src = "documentation/images/structurizr-UC12.png" width ="300" />
 
-![Отправка сообщения пользователю](documentation/images/structurizr-UC21.png)
-![Получение списка сообщения для пользователя](documentation/images/structurizr-UC22.png)
+<img src = "documentation/images/structurizr-UC21.png" width ="300" />
+<img src = "documentation/images/structurizr-UC22.png" width ="300" />
