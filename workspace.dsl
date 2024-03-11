@@ -71,7 +71,7 @@ workspace {
         }
         #1
 
-        deploymentEnvironment "Production" {
+        deploymentEnvironment "Deploy" {
             deploymentNode "User Server" {
                 containerInstance social.user_service
             }
@@ -126,7 +126,7 @@ workspace {
             include *
         }
 
-        deployment social "Production" "deployment" {
+        deployment social "Deploy" "deployment" {
              include *
              autoLayout
         }

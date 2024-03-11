@@ -1,5 +1,9 @@
 # Социальная сеть 
-(Вариант 1)
+
+| Группа      | Вариант | Создатель   | 
+|-------------|---------|-------------|
+| М8О-109М-23 |     1   | Гаев Роман  | 
+
 ## Описание приложения
 ### Приложение должно содержать следующие данные:
 - Пользователь
@@ -34,3 +38,21 @@
    - [ ] - Должна быть диаграмма контейнеров
    - [ ] - Должна быть диаграмма развертывания
    - [ ] - Должно быть несколько динамических диаграмм
+### Архитектура
+
+<img src = "documentation/images/structurizr-SystemContext.png" width ="300" />
+<img src = "documentation/images/structurizr-Container.png" width ="400" />
+
+<img src = "documentation/images/structurizr-deployment.png" width ="705" />
+
+#### Динамические диаграммы
+
+![Создание нового пользователя](documentation/images/structurizr-UC01.png)
+![Поиск пользователя по логину](documentation/images/structurizr-UC02.png)
+![Поиск пользователя по маске имя и фамилии](documentation/images/structurizr-UC03.png)
+
+![Добавление записи на стену](documentation/images/structurizr-UC11.png)
+![Загрузка стены пользователя](documentation/images/structurizr-UC12.png)
+
+![Отправка сообщения пользователю](documentation/images/structurizr-UC21.png)
+![Получение списка сообщения для пользователя](documentation/images/structurizr-UC22.png)
