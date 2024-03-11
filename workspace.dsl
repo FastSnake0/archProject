@@ -1,6 +1,6 @@
 workspace {
-    name "Умный дом"
-    description "Простая система управления умного дома с базовыми функциями контроля состояния атмосферы в помещении"
+    name "SocArt"
+    description "Простая социальная сеть"
 
     # включаем режим с иерархической системой идентификаторов
     !identifiers hierarchical
@@ -17,17 +17,24 @@ workspace {
         
 
         # Описание компонент модели
-        user = person "Пользователь умного дома"
-        sensor     = softwareSystem "Датчик температуры"
-        smart_home = softwareSystem "Умный дом" {
-            description "Сервер управления умным домом"
+        user = person "Пользователь"
+        social = softwareSystem "Соцсеть" {
+            description "Сервис социальной сети"
+
+            client_service = container "Client service" {
+                description "Сервис пользовательского приложения"
+            }
 
             user_service = container "User service" {
                 description "Сервис управления пользователями"
             }
 
-            temperature_service = container "Temperature service" {
-                description "Сервис мониторинга и управления температурой в доме"
+            post_service = container "Post service" {
+                description "Сервис управления лентой"
+            }
+
+            chat_service = container "Сhat service" {
+                description "Сервис управления чатом"
             }
 
             group "Слой данных" {
@@ -43,53 +50,55 @@ workspace {
                     tags "database"
                 }
 
-                smarthome_database = container "Smarthome Database" {
-                    description "База данных для хранения информации с сенсоров"
+                content_database = container "Content Database" {
+                    description "База данных для хранения ленты и личных сообщений"
                     technology "MongoDB 5"
                     tags "database"
                 }
+
             }
 
-            user_service -> user_cache "Получение/обновление данных о пользователях" "TCP 6379"
-            user_service -> user_database "Получение/обновление данных о пользователях" "TCP 5432"
+            user_service -> user_cache "Получение данных о пользователях"
+            user_service -> user_database "Получение/обновление данных о пользователях"
+            user_service -> post_service "API запрос от пользователя в ленту"
+            user_service -> chat_service "API запрос от пользователя в чат"
 
-            temperature_service -> smarthome_database "Получение/обновление данных о температуре" "TCP 27018"
-            temperature_service -> user_service "Аутентификация пользователя" "REST HTTP 443"
+            post_service -> content_database "Получение/обновление данных о ленте"
+            chat_service -> content_database "Получение/обновление данных о чате"
 
-            user -> user_service "Регистрация нового пользователя" "REST HTTP:8080"
-            sensor -> temperature_service "Получение данных о температуре в доме" "REST HTTP:8080"
+            user -> client_service "Просмотр ленты и отправка сообщений. Поиск других пользователей"
+
+            client_service -> user_service "API запрос от пользователя в сервис"
+
         }
-
-        user -> smart_home "Управление устройствами умного дома"
-        sensor -> smart_home "Обновление актуальных данных о температуре в доме" "REST HTTP:8080"
+        #1
 
         deploymentEnvironment "Production" {
             deploymentNode "User Server" {
-                containerInstance smart_home.user_service
+                containerInstance social.user_service
             }
 
-            deploymentNode "Temperature Server" {
-                containerInstance smart_home.temperature_service
-                properties {
-                    "cpu" "4"
-                    "ram" "256Gb"
-                    "hdd" "4Tb"
-                }
+            deploymentNode "Post Server" {
+                containerInstance social.post_service
+            }
+
+            deploymentNode "Chat Server" {
+                containerInstance social.chat_service
             }
 
             deploymentNode "databases" {
      
                 deploymentNode "Database Server 1" {
-                    containerInstance smart_home.user_database
+                    containerInstance social.user_database
                 }
 
                 deploymentNode "Database Server 2" {
-                    containerInstance smart_home.smarthome_database
+                    containerInstance social.content_database
                     instances 3
                 }
 
                 deploymentNode "Cache Server" {
-                    containerInstance smart_home.user_cache
+                    containerInstance social.user_cache
                 }
             }
             
@@ -109,30 +118,74 @@ workspace {
             workspace.views.views.findAll { it instanceof com.structurizr.view.ModelView }.each { it.enableAutomaticLayout() }
         }
 
-        dynamic smart_home "UC01" "Добавление нового пользователя" {
+        systemContext social {
             autoLayout
-            user -> smart_home.user_service "Создать нового пользователя (POST /user)"
-            smart_home.user_service -> smart_home.user_database "Сохранить данные о пользователе" 
+            include *
         }
 
-        dynamic smart_home "UC02" "Удаление пользователя" {
+        container social {
             autoLayout
-            user -> smart_home.user_service "Удалить нового пользователя (DELETE /user)"
-            smart_home.user_service -> smart_home.user_database "Удалить данные о пользователе" 
+            include *
         }
 
-        dynamic smart_home "UC03" "Сохранить данные о температуре" {
-            autoLayout
-            sensor -> smart_home.temperature_service "Сохранить данные о температуре (POST /user)"
-            smart_home.temperature_service -> smart_home.smarthome_database "Сохранить данные о температуре" 
+        deployment social "Production" "deployment" {
+             include *
+             autoLayout
         }
 
-        dynamic smart_home "UC04" "Получить данные о температуре" {
+        dynamic social "UC01" "Добавление нового пользователя" {
             autoLayout
-            sensor -> smart_home.temperature_service "Получить данные о температуре (GET /user)"
-            smart_home.temperature_service -> smart_home.user_service "Проверить аутентификацию пользователя (GET /user)"
-            smart_home.temperature_service -> smart_home.smarthome_database "Получить данные о температуре" 
+            user -> social.client_service "Создать нового пользователя (логин) (POST /user)"
+            social.client_service -> social.user_service "Если логин не занят" 
+            social.user_service -> social.user_database "Сохранить данные о пользователе"
+            social.user_service -> social.user_cache "Добавить данные о пользователе в кэш"
         }
+
+        dynamic social "UC02" "Поиск пользователя по логину" {
+            autoLayout
+            user -> social.client_service "Найти пользователя по логину ({login}) (GET /user)"
+            social.client_service -> social.user_service
+            social.user_service -> social.user_cache "Найти пользователя в кэше"
+            social.user_service -> social.user_database "Найти пользователя в бд, если нет в кэше"
+            
+        }
+
+        dynamic social "UC03" "Поиск пользователя по маске имя и фамилии" {
+            autoLayout
+            user -> social.client_service "Найти пользователя по маске ({mask}) (GET /user)"
+            social.client_service -> social.user_service
+            social.user_service -> social.user_cache "Найти пользователя в кэше"
+            social.user_service -> social.user_database "Найти пользователя в бд, если нет в кэше"   
+        }
+
+        dynamic social "UC11" "Добавление записи на стену" {
+            autoLayout
+            user -> social.client_service "Создать пост (POST /user/post)"
+            social.client_service -> social.user_service "Проверка аутентификации пользователя" 
+            social.user_service -> social.post_database "Сохранить пост"
+        }
+
+        dynamic social "UC12" "Загрузка стены пользователя" {
+            autoLayout
+            user -> social.client_service "Загрузка постов пользователя (GET /user/post)"
+            social.client_service -> social.user_service "Сохранить данные о пользователе" 
+            social.user_service -> social.post_service "Сохранить данные о пользователе"
+        }
+
+        dynamic social "UC21" "Отправка сообщения пользователю" {
+            autoLayout
+            user -> social.client_service "Создать нового пользователя (GET /user)"
+            social.user_service -> social.user_database "Сохранить данные о пользователе" 
+        }
+
+        dynamic social "UC22" "Получение списка сообщения для пользователя" {
+            autoLayout
+            user -> social.client_service "Создать нового пользователя (GET /user)"
+            social.user_service -> social.user_database "Сохранить данные о пользователе" 
+        }
+
+
+    
 
 
         styles {
