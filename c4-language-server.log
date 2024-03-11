@@ -1240,3 +1240,4 @@
 01:23:48.445 [ForkJoinPool.commonPool-worker-6] DEBUG d.s.c.ls.model.C4DocumentManager - getModel file: C:\Jup\arch\workspace.dsl
 01:23:48.445 [ForkJoinPool.commonPool-worker-6] INFO  d.s.c.l.s.C4TextDocumentService - <-- getDocument
 01:23:49.028 [pool-1-thread-1] INFO  d.s.c.ls.service.C4WorkspaceService - didChangeWatchedFiles
+01:25:29.185 [main] INFO  d.s.c.ls.C4LanguageServerLauncher - Launching C4LanguageServer finished

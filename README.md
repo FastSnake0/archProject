@@ -33,15 +33,14 @@
 примерами задания
 - [x] 5. Создать файлы с описанием «архитектуры» согласно вашему варианту задания
 в Structurizr Lite.
-- [ ] 6. Требования к диаграммам:
-   - [ ] - Должна быть контекстная диаграмма
-   - [ ] - Должна быть диаграмма контейнеров
-   - [ ] - Должна быть диаграмма развертывания
-   - [ ] - Должно быть несколько динамических диаграмм
+- [x] 6. Требования к диаграммам:
+   - [x] - Должна быть контекстная диаграмма
+   - [x] - Должна быть диаграмма контейнеров
+   - [x] - Должна быть диаграмма развертывания
+   - [x] - Должно быть несколько динамических диаграмм
 ### Архитектура
 
-<img src = "documentation/images/structurizr-SystemContext.png" width ="300" />
-<img src = "documentation/images/structurizr-Container.png" width ="400" />
+<img src = "documentation/images/structurizr-SystemContext.png" width ="500" /> <img src = "documentation/images/structurizr-Container.png" width ="500" />
 
 <img src = "documentation/images/structurizr-deployment.png" width ="705" />
 
