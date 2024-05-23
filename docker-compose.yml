@@ -1,4 +1,4 @@
-version: "3"
+version: "3.2"
 
 services:
   structurizr:
@@ -7,3 +7,20 @@ services:
       - 8080:8080
     volumes:
       - .:/usr/local/structurizr:z
+
+  db:
+    image: postgres
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: meow
+      POSTGRES_PASSWORD: PWDmeow
+      POSTGRES_DB: userdb
+    ports:
+      - "8032:8032"
+    volumes:
+      - my_dbdata:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d/
+
+volumes:
+  my_dbdata:
+

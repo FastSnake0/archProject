@@ -45,12 +45,14 @@
 
 #### Динамические диаграммы
 
-<img src = "documentation/images/structurizr-UC01.png" width ="400" />
-<img src = "documentation/images/structurizr-UC02.png" width ="300" />
+<img src = "documentation/images/structurizr-UC01.png" width ="350" />
+<img src = "documentation/images/structurizr-UC02.png" width ="350" />
 <img src = "documentation/images/structurizr-UC03.png" width ="300" />
 
-<img src = "documentation/images/structurizr-UC11.png" width ="300" />
-<img src = "documentation/images/structurizr-UC12.png" width ="300" />
 
-<img src = "documentation/images/structurizr-UC21.png" width ="300" />
-<img src = "documentation/images/structurizr-UC22.png" width ="300" />
+<img src = "documentation/images/structurizr-UC11.png" width ="350" />
+<img src = "documentation/images/structurizr-UC12.png" width ="350" />
+
+
+<img src = "documentation/images/structurizr-UC21.png" width ="350" />
+<img src = "documentation/images/structurizr-UC22.png" width ="350" />

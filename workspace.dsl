@@ -109,14 +109,13 @@ workspace {
         properties { 
             structurizr.tooltips true
         }
-
-
+        /*
         !script groovy {
             workspace.views.createDefaultViews()
             workspace.views.views.findAll { it instanceof com.structurizr.view.ModelView }.each { it.enableAutomaticLayout() }
-        }
+        }*/
 
-        /*
+        
         systemContext social {
             autoLayout
             include *
@@ -131,7 +130,7 @@ workspace {
              include *
              autoLayout
         }
-        */
+        
 
         dynamic social "UC01" "Добавление нового пользователя" {
             autoLayout
