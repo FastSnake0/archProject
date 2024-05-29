@@ -3,6 +3,10 @@
 
 #include <string>
 #include <memory>
+#include <vector>
+#include <map>
+
+
 #include <Poco/Data/PostgreSQL/Connector.h>
 #include <Poco/Data/PostgreSQL/PostgreSQLException.h>
 #include <Poco/Data/SessionFactory.h>
@@ -12,6 +16,9 @@
 #include <Poco/MongoDB/Connection.h>
 #include <Poco/MongoDB/Database.h>
 #include <Poco/MongoDB/Cursor.h>
+
+#include <Poco/JSON/Object.h>
+#include <Poco/JSON/Array.h>
 
 namespace database{
     class Database{

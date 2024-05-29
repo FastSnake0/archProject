@@ -13,22 +13,19 @@ namespace database
             long _id;
             long _user_id;
             std::string _type;
-
             struct Content {
                 std::string title;
                 std::vector<std::string> body;
                 std::string media_url; 
                 std::string timestamp;
             };
+            
             Content _content;
 
             int _like_count;
             int _dislike_count;
 
         public:
-
-            static Post        fromJSON(const std::string & str);
-
             
 
             long                     get_id() const;
@@ -38,14 +35,14 @@ namespace database
             int                      get_like_count()  const;
             int                      get_dislike_count() const;
 
-            void        fromJson(const std::string &jsonString);
+            static Post             fromJson(const std::string &jsonString);
             Poco::JSON::Object::Ptr toJson() const;
 
 
             long&        id();
             long&        user_id();
             std::string& type();
-            Content& content();
+            Content&     content();
             int&         like_count();
             int&         dislike_count();
 

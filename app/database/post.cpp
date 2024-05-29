@@ -8,8 +8,9 @@
 
 namespace database
 {
-    void Post::fromJson(const std::string& jsonString) 
+    Post Post::fromJson(const std::string& jsonString) 
     {
+        Post post;
         Poco::JSON::Parser parser;
         Poco::Dynamic::Var result;
 
@@ -23,25 +24,26 @@ namespace database
 
         Poco::JSON::Object::Ptr jsonObj = result.extract<Poco::JSON::Object::Ptr>();
 
-        _id = jsonObj->getValue<long>("id");
-        _user_id = jsonObj->getValue<long>("user_id");
-        _type = jsonObj->getValue<std::string>("type");
+        post.id() = jsonObj->getValue<long>("id");
+        post.user_id() = jsonObj->getValue<long>("user_id");
+        post.type() = jsonObj->getValue<std::string>("type");
 
         Poco::JSON::Object::Ptr contentObj = jsonObj->getObject("content");
-        _content.title = contentObj->getValue<std::string>("title");
+        post.content().title = contentObj->getValue<std::string>("title");
 
         Poco::JSON::Array::Ptr bodyArray = contentObj->getArray("body");
-        _content.body.clear();
+        post.content().body.clear();
         for (size_t i = 0; i < bodyArray->size(); ++i) 
         {
-            _content.body.push_back(bodyArray->getElement<std::string>(i));
+            post.content().body.push_back(bodyArray->getElement<std::string>(i));
         }
 
-        _content.media_url = contentObj->getValue<std::string>("media_url");
-        _content.timestamp = contentObj->getValue<std::string>("timestamp");
+        post.content().media_url = contentObj->getValue<std::string>("media_url");
+        post.content().timestamp = contentObj->getValue<std::string>("timestamp");
 
-        _like_count = jsonObj->getValue<int>("like_count");
-        _dislike_count = jsonObj->getValue<int>("dislike_count");
+        post.like_count() = jsonObj->getValue<int>("like_count");
+        post.dislike_count() = jsonObj->getValue<int>("dislike_count");
+        return post;
     }
     
 
@@ -99,6 +101,25 @@ namespace database
     }
 
 
+    std::string& Post::type()
+    {
+        return _type;    
+    }
+    Post::Content& Post::content()
+    {
+        return _content;
+    }
+    int&         Post::like_count()
+    {
+        return _like_count;
+    }
+    int&         Post::dislike_count()
+    {
+        return _dislike_count;
+    }
+
+
+
     std::optional<Post> Post::read_by_id(long id)
     {
         std::optional<Post> result;
@@ -107,7 +128,7 @@ namespace database
         std::vector<std::string> results = database::Database::get().get_from_mongo("posts",params);
 
         if(!results.empty())
-            result = fromJSON(results[0]);
+            result = fromJson(results[0]);
         
         return result;
     }
@@ -121,7 +142,7 @@ namespace database
         std::vector<std::string> results = database::Database::get().get_from_mongo("posts",params);
 
         for(std::string& s : results) 
-            result.push_back(fromJSON(s));
+            result.push_back(fromJson(s));
         
 
         return result;
