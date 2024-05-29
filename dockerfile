@@ -25,4 +25,4 @@ RUN git clone https://github.com/tdv/redis-cpp.git &&\
 RUN ldconfig
 ADD ./app /app
 RUN cd /app && mkdir build && cd build && cmake  .. && make
-ENTRYPOINT [ "/app/build/app" ]
+ENTRYPOINT [ "/app/build/server" ]

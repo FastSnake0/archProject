@@ -23,14 +23,15 @@ namespace database
 
             Poco::Data::Session session = database::Database::get().create_session();
             Statement create_stmt(session);
-            create_stmt << "CREATE TABLE IF NOT EXISTS users (id SERIAL,"
+            create_stmt << "CREATE TABLE IF NOT EXISTS users ("
+                        << "id SERIAL PRIMARY KEY,"
                         << "first_name VARCHAR(256) NOT NULL,"
                         << "last_name VARCHAR(256) NOT NULL,"
-                        << "login VARCHAR(256) NOT NULL,"
+                        << "login VARCHAR(256) NOT NULL UNIQUE,"
                         << "password VARCHAR(256) NOT NULL,"
                         << "email VARCHAR(256) NULL,"
                         << "title VARCHAR(1024) NULL);",
-                now;
+                        now;
         }
 
         catch (Poco::Data::PostgreSQL::PostgreSQLException &e)
@@ -297,6 +298,72 @@ namespace database
             std::cout << "statement:" << e.what() << std::endl;
             throw;
         }
+    }
+
+    void User::put_to_mysql(std::map<std::string, std::string> &updates)
+    {
+
+        try
+        {
+            Poco::Data::Session session = database::Database::get().create_session();
+            Poco::Data::Statement update_stmt(session);
+
+            std::string query = "UPDATE users SET ";
+            for (auto it = updates.begin(); it != updates.end(); ++it)
+            {
+                query += it->first + " = ?, ";
+            }
+            query.pop_back();
+            query.pop_back(); 
+            query += " WHERE id = ?";
+            update_stmt << query;
+
+            for (auto it = updates.begin(); it != updates.end(); ++it) 
+            {
+                update_stmt, use(it->second);
+            }
+            update_stmt, use(_id);
+
+            update_stmt.execute();
+        }
+        catch (Poco::Data::PostgreSQL::ConnectionException &e)
+        {
+            std::cout << "connection:" << e.what() << std::endl;
+            throw;
+        }
+        catch (Poco::Data::PostgreSQL::StatementException &e)
+        {
+
+            std::cout << "statement:" << e.what() << std::endl;
+            throw;
+        }
+    }
+
+    void User::del_from_sql(size_t &affectedRows)
+    {
+        try
+        {
+            Poco::Data::Session session = database::Database::get().create_session();
+            Poco::Data::Statement delete_stmt(session);
+
+            // Формирование запроса на удаление
+            delete_stmt << "DELETE FROM users WHERE id = ?",
+                use(_id);
+            
+            affectedRows = delete_stmt.execute();  
+        }
+        catch (Poco::Data::PostgreSQL::ConnectionException &e)
+        {
+            std::cout << "connection:" << e.what() << std::endl;
+            throw;
+        }
+        catch (Poco::Data::PostgreSQL::StatementException &e)
+        {
+
+            std::cout << "statement:" << e.what() << std::endl;
+            throw;
+        }
+        
     }
 
 

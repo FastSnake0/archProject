@@ -18,7 +18,7 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(${EXAMPLE_BINARY} main.cpp 
                                  config/config.cpp 
-                                 database/database.cpp
+                                 database/db.cpp
                                  database/user.cpp)
 
 

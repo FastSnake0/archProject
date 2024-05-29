@@ -14,6 +14,9 @@ class  Config{
         std::string _password;
         std::string _database;
 
+        std::string _mongo;
+        std::string _mongo_port;
+        std::string _mongo_database;
 
     public:
         static Config& get();
@@ -33,6 +36,10 @@ class  Config{
         const std::string& get_login() const ;
         const std::string& get_password() const ;
         const std::string& get_database() const ;
+
+        const std::string& get_mongo() const;
+        const std::string& get_mongo_port() const;
+        const std::string& get_mongo_database() const;
 
 };
 
