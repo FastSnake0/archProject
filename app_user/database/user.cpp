@@ -254,6 +254,48 @@ namespace database
         }
     }
 
+
+    std::vector<User> User::search_by_login(std::string login)
+    {
+        try
+        {
+            Poco::Data::Session session = database::Database::get().create_session();
+            Statement select(session);
+            std::vector<User> result;
+            User a;
+            login +="%";
+            std::cout << "dadsda";
+            select << "SELECT id, first_name, last_name, email, title, login, password FROM users where login LIKE $1",
+                into(a._id),
+                into(a._first_name),
+                into(a._last_name),
+                into(a._email),
+                into(a._title),
+                into(a._login),
+                into(a._password),
+                use(login),
+                range(0, 1); //  iterate over result set one row at a time 
+            while (!select.done())
+            {
+                if (select.execute())
+                    result.push_back(a);
+            }
+            return result;
+        }
+
+        catch (Poco::Data::PostgreSQL::ConnectionException &e)
+        {
+            std::cout << "connection:" << e.what() << std::endl;
+            throw;
+        }
+        catch (Poco::Data::PostgreSQL::StatementException &e)
+        {
+
+            std::cout << "statement:" << e.what() << std::endl;
+            throw;
+        }
+    }
+
     /*
         INSERT
     */
@@ -300,7 +342,7 @@ namespace database
         }
     }
 
-    void User::put_to_mysql(std::map<std::string, std::string> &updates)
+    void User::put_to_mysql()
     {
 
         try
@@ -308,21 +350,22 @@ namespace database
             Poco::Data::Session session = database::Database::get().create_session();
             Poco::Data::Statement update_stmt(session);
 
-            std::string query = "UPDATE users SET ";
-            for (auto it = updates.begin(); it != updates.end(); ++it)
-            {
-                query += it->first + " = ?, ";
-            }
-            query.pop_back();
-            query.pop_back(); 
-            query += " WHERE id = ?";
-            update_stmt << query;
+            update_stmt << "UPDATE users SET "
+                        << "first_name = CASE WHEN first_name <> $1 THEN $1 ELSE first_name END, "
+                        << "last_name = CASE WHEN last_name <> $2 THEN $2 ELSE last_name END, "
+                        << "email = CASE WHEN email <> $3 THEN $3 ELSE email END, "
+                        << "title = CASE WHEN title <> $4 THEN $4 ELSE title END, "
+                        << "login = CASE WHEN login <> $5 THEN $5 ELSE login END, "
+                        << "password = CASE WHEN password <> $6 THEN $6 ELSE password END "
+                        << "WHERE id = $7",
+                        use(_first_name),
+                        use(_last_name),
+                        use(_email),
+                        use(_title),
+                        use(_login),
+                        use(_password),
+                        use(_id);
 
-            for (auto it = updates.begin(); it != updates.end(); ++it) 
-            {
-                update_stmt, use(it->second);
-            }
-            update_stmt, use(_id);
 
             update_stmt.execute();
         }
@@ -347,7 +390,7 @@ namespace database
             Poco::Data::Statement delete_stmt(session);
 
             // Формирование запроса на удаление
-            delete_stmt << "DELETE FROM users WHERE id = ?",
+            delete_stmt << "DELETE FROM users WHERE id = $1",
                 use(_id);
             
             affectedRows = delete_stmt.execute();  

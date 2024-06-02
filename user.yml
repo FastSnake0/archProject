@@ -1,0 +1,368 @@
+openapi: '3.0.2'
+info:
+  title: User_service
+  version: '1.0'
+servers:
+  - url: http://localhost:8080
+paths:
+  /user:
+    get:
+      summary: Get user by ID
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user to fetch
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Добавление нового пользователя
+      parameters:
+      - name: first_name
+        description: Имя пользователя
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: last_name
+        description: Фамилия пользователя
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: email
+        description: email пользователя
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: title
+        description: Форма обращение к пользователя 
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: login
+        description: login пользователя
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: password
+        description: пароль пользователя
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Идентификатор, добавленного пользователя
+          content:
+            application/json:
+              schema:
+                type: integer
+        404:
+          description: Ошибка добавления пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Неожиданная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update an existing user
+      parameters:
+      - name: id
+        description: id пользователя
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: first_name
+        description: Имя пользователя
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: last_name
+        description: Фамилия пользователя
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: email
+        description: email пользователя
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: title
+        description: Форма обращение к пользователя 
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: login
+        description: login пользователя
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: password
+        description: пароль пользователя
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Идентификатор, изменённого пользователя
+          content:
+            application/json:
+              schema:
+                type: integer
+        404:
+          description: Ошибка добавления пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Неожиданная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        
+    delete:
+      summary: Update an existing user
+      parameters:
+        - name: id
+          description: id пользователя
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Идентификатор, изменённого пользователя
+          content:
+            application/json:
+              schema:
+                type: integer
+        404:
+          description: Ошибка добавления пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Неожиданная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        
+
+  /auth:
+    get:
+      summary: Authenticate user and provide token
+      description: Authenticates the user using Basic Authentication and returns a JWT token upon successful authentication.
+      tags:
+        - Authentication
+      parameters:
+        - name: Authorization
+          in: header
+          description: Basic authorization header containing the credentials.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "12345"
+                  Token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: "/errors/unauthorized"
+                  title:
+                    type: string
+                    example: "Internal exception"
+                  status:
+                    type: string
+                    example: "401"
+                  detail:
+                    type: string
+                    example: "not authorized"
+                  instance:
+                    type: string
+                    example: "/auth"
+
+  /search:
+    get:
+      summary: Search users by name
+      parameters:
+        - in: query
+          name: login
+          schema:
+            type: string
+          description: Логин пользователя.
+        - in: query
+          name: first_name
+          schema:
+            type: string
+          description: Имя пользователя.
+        - in: query
+          name: last_name
+          schema:
+            type: string
+          description: Фамилия пользователя.
+      responses:
+        '200':
+          description: Успешный ответ.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+                    email:
+                      type: string
+                    title:
+                      type: string
+                    login:
+                      type: string
+        '400':
+          description: Неправильный запрос. Отсутствуют необходимые параметры.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: /errors/bad_request
+                  title:
+                    type: string
+                    example: Bad Request
+                  status:
+                    type: integer
+                    example: 400
+                  detail:
+                    type: string
+                    example: Missing required query parameters
+                  instance:
+                    type: string
+                    example: /search
+        '404':
+          description: Пользователь не найден.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: /errors/not_found
+                  title:
+                    type: string
+                    example: Internal exception
+                  status:
+                    type: integer
+                    example: 404
+                  detail:
+                    type: string
+                    example: user not found
+                  instance:
+                    type: string
+                    example: /user
+components:
+  schemas:
+    user_id:
+      description: Уникальный идентификатор пользователя
+      type: integer
+    users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      required:
+        - id
+        - first_name
+        - last_name
+        - email
+        - title
+        - login
+        - password
+      properties:
+        id:
+          $ref: '#/components/schemas/user_id'
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        title:
+          type: string
+        login:
+          type: string
+        password:
+          type: string
+
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: Сообщение о ошибке
+          type: string
+  securitySchemes:
+      basicAuth:     
+        type: http
+        scheme: basic
+security:
+  - basicAuth: []

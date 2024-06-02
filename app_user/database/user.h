@@ -44,8 +44,10 @@ namespace database
             static std::vector<User> read_all();
             static std::vector<User> search(std::string first_name,std::string last_name);
 
+            static std::vector<User> search_by_login(std::string login);
+
             void save_to_mysql();
-            void put_to_mysql(std::map<std::string, std::string> &updates);
+            void put_to_mysql();
             void del_from_sql(size_t &affectedRows);
 
             Poco::JSON::Object::Ptr toJSON() const;

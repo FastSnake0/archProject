@@ -38,7 +38,6 @@ namespace database
             post.content().body.push_back(bodyArray->getElement<std::string>(i));
         }
 
-        post.content().media_url = contentObj->getValue<std::string>("media_url");
         post.content().timestamp = contentObj->getValue<std::string>("timestamp");
 
         post.like_count() = jsonObj->getValue<int>("like_count");
@@ -64,7 +63,6 @@ namespace database
             bodyArray->add(bodyPart);
         }
         contentObj->set("body", bodyArray);
-        contentObj->set("media_url", _content.media_url);
         contentObj->set("timestamp", _content.timestamp);
 
         jsonObj->set("content", contentObj);

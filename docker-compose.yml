@@ -1,12 +1,12 @@
 version: "3.2"
 
 services:
-  structurizr:
-    image: structurizr/lite
-    ports:
-      - 2525:2525
-    volumes:
-      - .:/usr/local/structurizr:z
+# structurizr:
+#   image: structurizr/lite
+#   ports:
+#     - 2525:2525
+#   volumes:
+#     - .:/usr/local/structurizr:z
 
   db:
     image: postgres
@@ -36,7 +36,7 @@ services:
       - app-network
     volumes:
       - my_mongodb:/data/db
-      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
+      - ./init-scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
     ports:
       - '27017:27017'
     healthcheck:
@@ -49,18 +49,13 @@ services:
     container_name: user_service
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: dockerfile_user
     environment:
       - DB_HOST=postgres_container
       - DB_PORT=5432
       - DB_LOGIN=meow
       - DB_PASSWORD=PWDmeow
       - DB_DATABASE=userdb
-
-      - MONGO_HOST=mongodb_container
-      - MONGO_PORT=27017
-      - MONGO_DATABASE=arch
-
     depends_on:
       db:
         condition: service_healthy
@@ -74,48 +69,16 @@ services:
     container_name: post_service
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: dockerfile_post
     environment:
-      - DB_HOST=postgres_container
-      - DB_PORT=5432
-      - DB_LOGIN=meow
-      - DB_PASSWORD=PWDmeow
-      - DB_DATABASE=userdb
-
       - MONGO_HOST=mongodb_container
       - MONGO_PORT=27017
       - MONGO_DATABASE=arch
-
     depends_on:
       db:
         condition: service_healthy
     ports:
       - 8081:8081
-    networks:
-      - app-network
-  
-  chat_service:
-    tty: true
-    container_name: chat_service
-    build:
-      context: .
-      dockerfile: dockerfile
-    environment:
-      - DB_HOST=postgres_container
-      - DB_PORT=5432
-      - DB_LOGIN=meow
-      - DB_PASSWORD=PWDmeow
-      - DB_DATABASE=userdb
-
-      - MONGO_HOST=mongodb_container
-      - MONGO_PORT=27017
-      - MONGO_DATABASE=arch
-
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - 8082:8082
     networks:
       - app-network
 

@@ -253,3 +253,5 @@
 21:10:54.293 [ForkJoinPool.commonPool-worker-3] INFO  d.s.c.l.s.C4TextDocumentService - --> getDocument
 21:10:54.293 [ForkJoinPool.commonPool-worker-3] DEBUG d.s.c.ls.model.C4DocumentManager - getModel file: c:\Jup\arch\workspace.dsl
 21:10:54.293 [ForkJoinPool.commonPool-worker-3] INFO  d.s.c.l.s.C4TextDocumentService - <-- getDocument
+00:42:24.977 [pool-1-thread-1] INFO  d.s.c.l.s.C4TextDocumentService - didClose file:///c%3A/Jup/arch/workspace.dsl
+04:29:28.357 [main] INFO  d.s.c.ls.C4LanguageServerLauncher - Launching C4LanguageServer finished

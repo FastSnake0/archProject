@@ -8,15 +8,13 @@
 
 namespace database
 {
-    class Post{
+    class Chat{
         private:
             long _id;
             long _user_id;
             std::string _type;
             struct Content {
-                std::string title;
                 std::vector<std::string> body;
-                std::string media_url; 
                 std::string timestamp;
             };
             
@@ -35,7 +33,7 @@ namespace database
             int                      get_like_count()  const;
             int                      get_dislike_count() const;
 
-            static Post             fromJson(const std::string &jsonString);
+            static Chat             fromJson(const std::string &jsonString);
             Poco::JSON::Object::Ptr toJson() const;
 
 
@@ -48,8 +46,8 @@ namespace database
 
             
 
-            static std::optional<Post> read_by_id(long id);
-            static std::vector<Post> read_by_user_id(long user_id);
+            static std::optional<Chat> read_by_id(long id);
+            static std::vector<Chat> read_by_user_id(long user_id);
             void   add();
             void   update();
 
