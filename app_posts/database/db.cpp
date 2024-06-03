@@ -9,14 +9,17 @@ namespace database{
         connection_mongo.connect(Config::get().get_mongo(), atoi(Config::get().get_mongo_port().c_str()));
     }
 
-    Database& Database::get(){
+    Database &Database::get()
+    {
         static Database _instance;
         return _instance;
     }
 
-    Poco::Data::Session Database::create_session(){
-        return Poco::Data::Session(_pool->get());
+    Poco::MongoDB::Database &Database::get_mongo_database()
+    {
+        return database_mongo;
     }
+
     void Database::send_to_mongo(const std::string &collection, Poco::JSON::Object::Ptr json)
     {
         try

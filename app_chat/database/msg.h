@@ -11,38 +11,34 @@ namespace database
     class Chat{
         private:
             long _id;
-            long _user_id;
-            std::string _type;
-            struct Content {
-                std::vector<std::string> body;
-                std::string timestamp;
-            };
-            
-            Content _content;
+            long _from_id;
+            long _to_id;
 
-            int _like_count;
-            int _dislike_count;
-
+            std::string _text;
+            std::string _timestamp;
         public:
             
 
             long                     get_id() const;
-            long                     get_user_id()   const;
-            const std::string       &get_type()      const;
-            Content                  get_сontent() const;
-            int                      get_like_count()  const;
-            int                      get_dislike_count() const;
+            long                     get_from_id()   const;
+            long                     get_to_id()   const;
+
+            const std::string&       get_text() const;
+            const std::string&       get_timestamp() const;
+
+
+
 
             static Chat             fromJson(const std::string &jsonString);
             Poco::JSON::Object::Ptr toJson() const;
 
 
             long&        id();
-            long&        user_id();
-            std::string& type();
-            Content&     content();
-            int&         like_count();
-            int&         dislike_count();
+            long&        from_id();
+            long&        to_id();
+
+            std::string& text();
+            std::string& timestampt();
 
             
 

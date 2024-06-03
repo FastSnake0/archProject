@@ -1,0 +1,177 @@
+openapi: '3.0.2'
+info:
+  title: Post service
+  version: '1.0'
+servers:
+  - url: http://localhost:8081
+paths:
+  /posts:
+    get:
+      summary: Get posts by user ID
+      parameters:
+        - name: user_id
+          in: query
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '404':
+          description: Posts not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /post:
+    get:
+      summary: Get a post by ID
+      parameters:
+        - name: id
+          in: query
+          description: ID of the post
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Post found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '403':
+          description: User not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Post not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Добавление нового поста
+      parameters:
+      - name: id
+        description: Идентификатор поста
+        in: query
+        required: true
+        schema:
+          type: integer
+          default: 1
+      - name: user_id
+        description: Идентификатор пользователя
+        in: query
+        required: true
+        schema:
+          type: integer
+          default: 1
+      - name: title
+        description: Заголовок
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: text
+        description: Содержание
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Идентификатор, добавленного поста
+          content:
+            application/json:
+              schema:
+                type: integer
+        404:
+          description: Ошибка добавления поста
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Неожиданная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Post ID
+        user_id:
+          type: integer
+          description: User ID
+        type:
+          type: string
+          description: Type of post
+        body:
+          type: array
+          items:
+            type: string
+          description: Body of the post
+        like_count:
+          type: integer
+          description: Number of likes
+    NewPost:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Post ID
+        user_id:
+          type: integer
+          description: User ID
+        type:
+          type: string
+          description: Type of post
+        title:
+          type: string
+          description: Type of post
+        body:
+          type: array
+          items:
+            type: string
+          description: Body of the post
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: Сообщение о ошибке
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Error type
+        title:
+          type: string
+          description: Error title
+        status:
+          type: string
+          description: HTTP status code
+        detail:
+          type: string
+          description: Error detail
+        instance:
+          type: string
+          description: Instance where error occurred

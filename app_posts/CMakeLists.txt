@@ -4,7 +4,7 @@ SET (EXAMPLE_BINARY "server")
 
 find_package(OpenSSL)
 find_package(Threads)
-find_package(Poco REQUIRED COMPONENTS Foundation Util Net XML JSON Crypto NetSSL Data JWT MongoDB)
+find_package(Poco REQUIRED COMPONENTS Foundation Util Net XML JSON Crypto NetSSL JWT MongoDB)
 
 if(NOT ${Poco_FOUND})
     message(FATAL_ERROR "Poco C++ Libraries not found.")

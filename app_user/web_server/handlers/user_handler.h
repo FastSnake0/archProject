@@ -151,8 +151,7 @@ public:
 
     Poco::JSON::Object::Ptr remove_password(Poco::JSON::Object::Ptr src)
     {
-        if (src->has("password"))
-            src->set("password", "*******");
+        //if (src->has("password")) src->set("password", "*******");
         return src;
     }
 
@@ -214,6 +213,7 @@ public:
             }
             else if (hasSubstr(request.getURI(), "/auth"))
             {
+                std::cout << "21332131233";
 
                 std::string scheme;
                 std::string info;
@@ -224,7 +224,9 @@ public:
                 if (scheme == "Basic")
                 {
                     get_identity(info, login, password);
+                    std::cout << "(handler) password input:" << password << "\n";
                     password = hashPassword(password);
+                    std::cout << "(handler) password hashed:" << password << "\n";
                     if (auto id = database::User::auth(login, password))
                     {
                         std::string token = generate_token(*id,login);
@@ -535,11 +537,12 @@ public:
         response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
         response.setChunkedTransferEncoding(true);
         response.setContentType("application/json");
+        response.set("Access-Control-Allow-Origin", "*");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("type", "/errors/not_found");
         root->set("title", "Internal exception");
         root->set("status", Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
-        root->set("detail", "request ot found");
+        root->set("detail", "request not found");
         root->set("instance", "/user");
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);

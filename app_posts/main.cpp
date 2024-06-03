@@ -3,6 +3,7 @@
 
 int main(int argc, char*argv[]) 
 {
+    std::cout << "dsad";
     HTTPWebServer app;
     return app.run(argc, argv);
 }

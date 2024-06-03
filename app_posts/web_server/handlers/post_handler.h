@@ -11,18 +11,19 @@
 #include "Poco/Net/HTMLForm.h"
 #include "Poco/Net/ServerSocket.h"
 #include "Poco/Timestamp.h"
+#include "Poco/DateTime.h"
 #include "Poco/DateTimeFormatter.h"
-#include "Poco/DateTimeFormat.h"
+#include "Poco/Timezone.h"
 #include "Poco/Exception.h"
 #include "Poco/ThreadPool.h"
 #include "Poco/Util/ServerApplication.h"
 #include "Poco/Util/Option.h"
 #include "Poco/Util/OptionSet.h"
 #include "Poco/Util/HelpFormatter.h"
-#include <iostream>
+#include "Poco/JSON/Parser.h"
+#include "Poco/Dynamic/Var.h"
 #include <iostream>
 #include <fstream>
-#include <Poco/JSON/Parser.h>
 
 using Poco::DateTimeFormat;
 using Poco::DateTimeFormatter;
@@ -112,21 +113,41 @@ public:
             switch (method)
             {
             case GET:
-            if (hasSubstr(request.getURI(), "/posts"))
+            if (hasSubstr(request.getURI(), "/posts") && form.has("user_id"))
             {
                 long id = atol(form.get("user_id").c_str());
                 auto results = database::Post::read_by_user_id(id);
                 Poco::JSON::Array arr;
                 for (auto s : results)
                     arr.add(s.toJson());
-                response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                response.setChunkedTransferEncoding(true);
-                response.setContentType("application/json");
-                response.set("Access-Control-Allow-Origin", "*");
-                std::ostream &ostr = response.send();
-                Poco::JSON::Stringifier::stringify(arr, ostr);
 
-                return;
+                if (arr.size()>0)
+                {
+                    response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    response.set("Access-Control-Allow-Origin", "*");
+                    std::ostream &ostr = response.send();
+                    Poco::JSON::Stringifier::stringify(arr, ostr);
+                    return;
+                }
+                else
+                {
+                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    response.set("Access-Control-Allow-Origin", "*");
+                    Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                    root->set("type", "/errors/not_found");
+                    root->set("title", "Internal exception");
+                    root->set("status", "404");
+                    root->set("detail", "posts not found");
+                    root->set("instance", "/posts");
+                    std::ostream &ostr = response.send();
+                    Poco::JSON::Stringifier::stringify(root, ostr);
+                    return;
+
+                }
             }
             else if (hasSubstr(request.getURI(), "/post"))
             {
@@ -135,26 +156,11 @@ public:
                 std::optional<database::Post> result = database::Post::read_by_id(id);
                 if (result)
                 {
-                    if(result->get_user_id()!=id) 
-                    {
-                        response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
-                        response.setChunkedTransferEncoding(true);
-                        response.setContentType("application/json");
-                        response.set("Access-Control-Allow-Origin", "*");
-                        Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                        root->set("type", "/errors/not_authorized");
-                        root->set("title", "Internal exception");
-                        root->set("status", "403");
-                        root->set("detail", "user not authorized");
-                        root->set("instance", "/post_service");
-                        std::ostream &ostr = response.send();
-                        Poco::JSON::Stringifier::stringify(root, ostr);
-                        return;                   
-                    }
 
                     response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
                     response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
+                    response.set("Access-Control-Allow-Origin", "*");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(result->toJson(), ostr);
                     return;
@@ -179,36 +185,28 @@ public:
                 break;
 
             case POST:
+                if (form.has("id") && form.has("user_id") && form.has("title") && form.has("text"))
                 {
-                database::Post p;
-                p.id() = atol(form.get("id").c_str());
-                p.user_id() = atol(form.get("user_id").c_str());
-                p.type() = form.get("type");
+                    database::Post p;
+                    p.id() = atol(form.get("id").c_str());
+                    p.user_id() = atol(form.get("user_id").c_str());
+                    p.title() = form.get("title");
+                    p.text() = form.get("text");
+                    Poco::DateTime now;
+                    p.timestamp() = Poco::DateTimeFormatter::format(now, Poco::DateTimeFormat::ISO8601_FORMAT);
 
-                Poco::JSON::Parser parser;
+                    p.add();
 
-                Poco::Dynamic::Var result = parser.parse(form.get("body"));
-                Poco::JSON::Array::Ptr bodyArray = result.extract<Poco::JSON::Array::Ptr>();
-                std::vector<std::string> body;
-                for (size_t i = 0; i < bodyArray->size(); ++i) 
-                {
-                    body.push_back(bodyArray->getElement<std::string>(i));
+                    response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    response.set("Access-Control-Allow-Origin", "*");
+                    std::ostream &ostr = response.send();
+                    ostr << p.get_id();
+                    return;
+
                 }
 
-                p.like_count() = 0;
-                p.like_count() = 0;
-
-
-                p.add();
-
-                response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                response.setChunkedTransferEncoding(true);
-                response.setContentType("application/json");
-                response.set("Access-Control-Allow-Origin", "*");
-                std::ostream &ostr = response.send();
-                ostr << p.get_id();
-                }
-                return;
 
                 break;
 
@@ -230,6 +228,7 @@ public:
         response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
         response.setChunkedTransferEncoding(true);
         response.setContentType("application/json");
+        response.set("Access-Control-Allow-Origin", "*");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("type", "/errors/not_found");
         root->set("title", "Internal exception");

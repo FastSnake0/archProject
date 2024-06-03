@@ -53,9 +53,8 @@ public:
     {
 
         std::cout << "request:" << request.getURI()<< std::endl;
-        if (hasSubstr(request.getURI(),"/user") ||
-            hasSubstr(request.getURI(),"/search") ||
-            hasSubstr(request.getURI(),"/auth")) 
+        if (hasSubstr(request.getURI(),"/posts") ||
+            hasSubstr(request.getURI(),"/post")) 
             return new PostHandler(_format);
         /*   
         else

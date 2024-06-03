@@ -16,7 +16,7 @@ services:
       POSTGRES_PASSWORD: PWDmeow
       POSTGRES_DB: userdb
     volumes:
-      - my_dbdata:/var/lib/postgresql/data
+      - dbdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: unless-stopped
@@ -29,13 +29,13 @@ services:
       - app-network
 
   mongo:
-    image: mongo
+    image: mongo:5.0
     container_name: mongodb_container
     restart: on-failure
     networks:
       - app-network
     volumes:
-      - my_mongodb:/data/db
+      - mongodb:/data/db
       - ./init-scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
     ports:
       - '27017:27017'
@@ -75,18 +75,18 @@ services:
       - MONGO_PORT=27017
       - MONGO_DATABASE=arch
     depends_on:
-      db:
+      mongo:
         condition: service_healthy
     ports:
-      - 8081:8081
+      - 8081:8080
     networks:
       - app-network
 
 
 
 volumes:
-  my_dbdata:
-  my_mongodb:
+  dbdata:
+  mongodb:
 
 
 networks:

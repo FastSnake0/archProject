@@ -183,53 +183,20 @@ paths:
 
   /auth:
     get:
-      summary: Authenticate user and provide token
-      description: Authenticates the user using Basic Authentication and returns a JWT token upon successful authentication.
-      tags:
-        - Authentication
-      parameters:
-        - name: Authorization
-          in: header
-          description: Basic authorization header containing the credentials.
-          required: true
-          schema:
-            type: string
+      summary: Проверка аутентификации
       responses:
         '200':
-          description: Successful authentication
+          description: User ID
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    example: "12345"
-                  Token:
-                    type: string
-                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        '401':
-          description: Unauthorized
+               type: string
+        401:
+          description: Not authentication
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    example: "/errors/unauthorized"
-                  title:
-                    type: string
-                    example: "Internal exception"
-                  status:
-                    type: string
-                    example: "401"
-                  detail:
-                    type: string
-                    example: "not authorized"
-                  instance:
-                    type: string
-                    example: "/auth"
+                type: string
 
   /search:
     get:
