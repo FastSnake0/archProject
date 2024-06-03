@@ -6,12 +6,6 @@
 #include <vector>
 #include <map>
 
-
-#include <Poco/Data/PostgreSQL/Connector.h>
-#include <Poco/Data/PostgreSQL/PostgreSQLException.h>
-#include <Poco/Data/SessionFactory.h>
-#include <Poco/Data/SessionPool.h>
-
 #include <Poco/MongoDB/MongoDB.h>
 #include <Poco/MongoDB/Connection.h>
 #include <Poco/MongoDB/Database.h>

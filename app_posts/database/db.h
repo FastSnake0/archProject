@@ -24,7 +24,7 @@ namespace database{
             Database();
         public:
 
-             static Database& get();       
+            static Database& get();       
             Poco::MongoDB::Database& get_mongo_database();
             void send_to_mongo(const std::string& collection,Poco::JSON::Object::Ptr json);
             void update_mongo(const std::string& collection,std::map<std::string,long>& params,Poco::JSON::Object::Ptr json);

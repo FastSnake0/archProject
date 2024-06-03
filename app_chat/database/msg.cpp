@@ -44,13 +44,13 @@ namespace database
     }
     
 
-    Poco::JSON::Object::Ptr Post::toJson() const 
+    Poco::JSON::Object::Ptr Chat::toJson() const 
     {
         Poco::JSON::Object::Ptr jsonObj = new Poco::JSON::Object();
 
         jsonObj->set("id", _id);
-        jsonObj->set("user_id", _user_id);
-        jsonObj->set("title", _title);
+        jsonObj->set("from_id", _from_id);
+        jsonObj->set("to_id", _to_id);
         jsonObj->set("text", _text);
         jsonObj->set("timestamp", _timestamp);
 
@@ -60,39 +60,43 @@ namespace database
         return jsonObj;
     }
 
-    long Post::get_id() const
+    long Chat::get_id() const
     {
         return _id;
     }
 
-    long Post::get_user_id() const
+    long Chat::get_user_id() const
     {
         return _user_id;
     }
 
-    const std::string &Post::get_title() const
+    const std::string &Chat::get_title() const
     {
         return _title;
     }
 
-    const std::string &Post::get_text() const
+    const std::string &Chat::get_text() const
     {
         return _text;
     }
 
-    const std::string &Post::get_timestamp() const
+    const std::string &Chat::get_timestamp() const
     {
         return _timestamp;
     }
 
 
-    long &Post::id()
+    long& Chat::id()
     {
         return _id;
     }
-    long &Post::user_id()
+    long &Chat::from_id()
     {
-        return _user_id;
+        return _from_id;
+    }
+    long &Chat::to_id()
+    {
+        return _to_id;
     }
 
 
@@ -111,7 +115,7 @@ namespace database
 
 
 
-    std::optional<Post> Post::read_by_id(long id)
+    std::optional<Post> Post::read_by_id(std::string& id)
     {
         
         std::optional<Post> result;

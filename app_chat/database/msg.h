@@ -4,13 +4,13 @@
 #include <vector>
 #include <optional>
 
-#include <Poco/JSON/Object.h>
+#include "Poco/JSON/Object.h"
 
 namespace database
 {
     class Chat{
         private:
-            long _id;
+            std::string _id;
             long _from_id;
             long _to_id;
 
@@ -33,9 +33,9 @@ namespace database
             Poco::JSON::Object::Ptr toJson() const;
 
 
-            long&        id();
-            long&        from_id();
-            long&        to_id();
+            std::string&        id();
+            long&               from_id();
+            long&               to_id();
 
             std::string& text();
             std::string& timestampt();
@@ -43,7 +43,8 @@ namespace database
             
 
             static std::optional<Chat> read_by_id(long id);
-            static std::vector<Chat> read_by_user_id(long user_id);
+            static std::vector<Chat> read_by_from_id(long user_id);
+            static std::vector<Chat> read_by_to_id(long user_id);
             void   add();
             void   update();
 
