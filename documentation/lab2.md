@@ -26,12 +26,13 @@ CRUD операции.
 
 Созданы контейнеры chat_service и post_service. Код для каждого отдельно в app_chat и app_posts соответственно.
 
-- [x] Cпецификация с OpenAPI с помощью Postman
+- [x] Cпецификация с OpenAPI
 
 chat.yml и post.yml
 
 - [x] Тест сервиса
-
 - [x] Тест Dockerfile
+
+
 - [x] Cкрипт для первичного наполнение БД
 - [x] github проект

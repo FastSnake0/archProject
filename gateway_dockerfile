@@ -23,6 +23,6 @@ RUN git clone https://github.com/tdv/redis-cpp.git &&\
     cd .. 
 
 RUN ldconfig
-ADD ./app_user /app
+ADD ./gateway /app
 RUN cd /app && mkdir build && cd build && cmake  .. && make
 ENTRYPOINT [ "/app/build/server" ]

@@ -5,6 +5,29 @@ info:
 servers:
   - url: http://localhost:8082
 paths:
+  /chat:
+     get:
+      summary: Чтение сообщений пользователя
+      responses:
+        '200':
+          description: Найденные сообщения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/messages'
+        404:
+          description: No user found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /message:
     get:
       summary: Чтение информации о сообщении

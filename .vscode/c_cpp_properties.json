@@ -5,7 +5,8 @@
             "includePath": [
                 "${default}",
                 "C:\\w64devkit\\include",
-                "C:\\Program Files\\OpenSSL-Win64\\include"
+                "C:\\Program Files\\OpenSSL-Win64\\include",
+                "C:\\clibs\\redis-cpp\\include"
             ],
             "defines": [
                 "_DEBUG",

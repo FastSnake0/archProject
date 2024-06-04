@@ -8,6 +8,10 @@ services:
 #   volumes:
 #     - .:/usr/local/structurizr:z
 
+####
+####    DATA 
+####
+
   db:
     image: postgres
     container_name: postgres_container
@@ -42,7 +46,22 @@ services:
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
 
+  cache:
+    container_name: cache_container
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning 
+    networks:
+      - app-network
+    volumes: 
+      - cache:/data
 
+
+####
+####    SERVICES
+####
 
   user_service:
     tty: true
@@ -100,11 +119,29 @@ services:
     networks:
       - app-network
 
+  gateway_service:
+    tty: true
+    container_name: gateway_container
+    build:
+      context: .
+      dockerfile: gateway_dockerfile
+    environment:
+      - JWT_KEY=0123456789ABCDEF0123456789ABCDEF
+      - CACHE=cache_container:6379
+      - USER_ADDRESS=http://user_service:8080
+      - CHAT_ADDRESS=http://chat_service:8080
+      - POSTS_ADDRESS=http://post_service:8080
+    ports:
+      - 8888:8888
+    networks:
+      - lab05-network
+
 
 
 volumes:
   dbdata0:
   mongodb:
+  cache:
 
 
 networks:
