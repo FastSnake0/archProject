@@ -238,12 +238,14 @@ public:
                 {
                     //long to_id = atol(form.get("user_id").c_str());
                     long to_id = id;
-                    std::vector<database::Chat> result = database::Chat::read_by_to_id(to_id);
+                    std::vector<database::Chat> result1 = database::Chat::read_by_to_id(to_id);
+                    std::vector<database::Chat> result2 = database::Chat::read_by_from_id(to_id);
+                    result1.insert(result1.end(), result2.begin(), result2.end());
 
-                    if (result.size()>0)
+                    if (result1.size()>0)
                     {
                         Poco::JSON::Array arr;
-                        for (auto s : result)
+                        for (auto s : result1)
                             arr.add(s.toJson());
                         
                         response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
@@ -264,7 +266,7 @@ public:
                         root->set("type", "/errors/not_found");
                         root->set("title", "Internal exception");
                         root->set("status", "404");
-                        root->set("detail", "not found by message id");
+                        root->set("detail", "User chat not found");
                         root->set("instance", "/message");
                         std::ostream &ostr = response.send();
                         Poco::JSON::Stringifier::stringify(root, ostr);

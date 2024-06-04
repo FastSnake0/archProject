@@ -218,15 +218,15 @@ public:
                 std::string scheme;
                 std::string info;
                 request.getCredentials(scheme, info);
-                std::cout << "scheme: " << scheme << " identity: " << info << std::endl;
+                //std::cout << "scheme: " << scheme << " identity: " << info << std::endl;
 
                 std::string login, password;
                 if (scheme == "Basic")
                 {
                     get_identity(info, login, password);
-                    std::cout << "(handler) password input:" << password << "\n";
+                    //std::cout << "(handler) password input:" << password << "\n";
                     password = database::User::hashPassword(password);
-                    std::cout << "(handler) password hashed:" << password << "\n";
+                    //std::cout << "(handler) password hashed:" << password << "\n";
                     if (auto id = database::User::auth(login, password))
                     {
                         std::string token = generate_token(*id,login);

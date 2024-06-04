@@ -20,8 +20,8 @@ namespace database
         std::string s1 = jsonString.substr(0,start-1);
         std::string s2 = jsonString.substr(end+1);
 
-        std::cout << s1 << s2 << std::endl;
-        std::cout << "from json:" << jsonString << std::endl;
+        //std::cout << s1 << s2 << std::endl;
+        //std::cout << "from json:" << jsonString << std::endl;
         try
         {
             result = parser.parse(s1 + s2);
@@ -52,7 +52,7 @@ namespace database
         jsonObj->set("text", _text);
         jsonObj->set("timestamp", _timestamp);
 
-        std::cout << "ok\n";
+        //std::cout << "ok\n";
 
 
         return jsonObj;

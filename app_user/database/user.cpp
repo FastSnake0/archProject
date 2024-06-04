@@ -129,7 +129,7 @@ namespace database
 
     User User::fromJSON(const std::string &str)
     {
-        std::cout << str << std::endl;
+        //std::cout << str << std::endl;
         User user;
         Poco::JSON::Parser parser;
         Poco::Dynamic::Var result = parser.parse(str);
@@ -175,7 +175,7 @@ namespace database
             Poco::Data::Session session = database::Database::get().create_session();
             Poco::Data::Statement select(session);
             long id;
-            std::cout << "(auth) password hashed:" << password << "\n";
+            //std::cout << "(auth) password hashed:" << password << "\n";
             select << "SELECT id FROM users where login=$1 and password=$2",
                 into(id),
                 use(login),
@@ -341,7 +341,7 @@ namespace database
             std::vector<User> result;
             User a;
             login +="%";
-            std::cout << "dadsda";
+            //std::cout << "dadsda";
             select << "SELECT id, first_name, last_name, email, title, login, password FROM users where login LIKE $1",
                 into(a._id),
                 into(a._first_name),
