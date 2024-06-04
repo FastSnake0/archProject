@@ -29,7 +29,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/Error'
   /post:
     get:
       summary: Get a post by ID
@@ -52,13 +52,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/Error'
         '404':
           description: Post not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/Error'
     post:
       summary: Добавление нового поста
       parameters:
@@ -157,21 +157,10 @@ components:
         message:
           description: Сообщение о ошибке
           type: string
-    ErrorResponse:
-      type: object
-      properties:
-        type:
-          type: string
-          description: Error type
-        title:
-          type: string
-          description: Error title
-        status:
-          type: string
-          description: HTTP status code
-        detail:
-          type: string
-          description: Error detail
-        instance:
-          type: string
-          description: Instance where error occurred
+  securitySchemes:
+      bearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+security:
+  - bearerAuth: []

@@ -17,16 +17,11 @@
 namespace database{
     class Database{
         private:
-            std::string _connection_string;
-            std::unique_ptr<Poco::Data::SessionPool> _pool;
-
             Poco::MongoDB::Connection connection_mongo;
             Poco::MongoDB::Database   database_mongo;
             Database();
         public:
             static Database& get();
-            Poco::Data::Session create_session();
-
             
             Poco::MongoDB::Database& get_mongo_database();
             void send_to_mongo(const std::string& collection,Poco::JSON::Object::Ptr json);

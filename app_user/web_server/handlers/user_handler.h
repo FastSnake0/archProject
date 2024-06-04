@@ -49,6 +49,7 @@ using Poco::Util::ServerApplication;
 #include "../../helper.h"
 
 std::string hashPassword(const std::string& password) {
+    
     // Создаем объект для хэширования с использованием алгоритма SHA256
     Poco::Crypto::DigestEngine engine("SHA256");
     // Добавляем пароль в DigestEngine
@@ -213,7 +214,6 @@ public:
             }
             else if (hasSubstr(request.getURI(), "/auth"))
             {
-                std::cout << "21332131233";
 
                 std::string scheme;
                 std::string info;

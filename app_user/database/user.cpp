@@ -32,6 +32,8 @@ namespace database
                         << "email VARCHAR(256) NULL,"
                         << "title VARCHAR(1024) NULL);",
                         now;
+            // Подсчет количества строк в таблице users
+            
         }
 
         catch (Poco::Data::PostgreSQL::PostgreSQLException &e)

@@ -48,13 +48,15 @@ namespace database
     {
         Poco::JSON::Object::Ptr jsonObj = new Poco::JSON::Object();
 
+        std::cout << "1\n";
+
         jsonObj->set("id", _id);
         jsonObj->set("from_id", _from_id);
         jsonObj->set("to_id", _to_id);
         jsonObj->set("text", _text);
         jsonObj->set("timestamp", _timestamp);
 
-        std::cout << "ok\n";
+        std::cout << "2\n";
 
 
         return jsonObj;
@@ -65,14 +67,14 @@ namespace database
         return _id;
     }
 
-    long Chat::get_user_id() const
+    long Chat::get_from_id() const
     {
-        return _user_id;
+        return _from_id;
     }
 
-    const std::string &Chat::get_title() const
+    long Chat::get_to_id() const
     {
-        return _title;
+        return _to_id;
     }
 
     const std::string &Chat::get_text() const
@@ -100,61 +102,68 @@ namespace database
     }
 
 
-    std::string& Post::title()
-    {
-        return _title;    
-    }
-    std::string& Post::text()
+    std::string& Chat::text()
     {
         return _text;    
     }
-    std::string& Post::timestamp()
+    std::string& Chat::timestamp()
     {
         return _timestamp;    
     }
 
 
 
-    std::optional<Post> Post::read_by_id(std::string& id)
+    std::optional<Chat> Chat::read_by_id(long id)
     {
-        
-        std::optional<Post> result;
+        std::optional<Chat> result;
         std::map<std::string,long> params;
         params["id"] = id;
-        std::vector<std::string> results = database::Database::get().get_from_mongo("posts",params);
+        std::vector<std::string> results = database::Database::get().get_from_mongo("chat",params);
         if(!results.empty())
             result = fromJson(results[0]);
         
         return result;
     }
 
-    std::vector<Post> Post::read_by_user_id(long user_id)
+    std::vector<Chat> Chat::read_by_from_id(long user_id)
     {
-        std::vector<Post> result;
-            std::map<std::string,long> params;
-            params["user_id"] = user_id;
+        std::vector<Chat> result;
+        std::map<std::string,long> params;
+        params["from_id"] = user_id;            
+        std::vector<std::string> results = database::Database::get().get_from_mongo("chat",params);
             
+        for(std::string& s : results) 
+            result.push_back(fromJson(s));
 
-            std::vector<std::string> results = database::Database::get().get_from_mongo("posts",params);
+        return result;
+        
+    }
+    std::vector<Chat> Chat::read_by_to_id(long user_id)
+    {
+        std::vector<Chat> result;
+        std::map<std::string,long> params;
+        params["to_id"] = user_id;            
+        std::vector<std::string> results = database::Database::get().get_from_mongo("chat",params);
             
-            for(std::string& s : results) 
-                result.push_back(fromJson(s));
-            
+        for(std::string& s : results) 
+            result.push_back(fromJson(s));
 
-            return result;
+        return result;
         
     }
 
-    void Post::add()
+    void Chat::add()
     {
-        database::Database::get().send_to_mongo("posts",toJson());
+
+        std::cout << "add:\n";
+        database::Database::get().send_to_mongo("chat",toJson());
     }
 
-    void Post::update()
+    void Chat::update()
     {
         std::map<std::string,long> params;
         params["id"] = _id;       
-        database::Database::get().update_mongo("posts",params,toJson());
+        database::Database::get().update_mongo("chat",params,toJson());
     }
     
 }

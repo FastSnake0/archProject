@@ -110,6 +110,35 @@ public:
 
         try
         {      
+
+            // Аутефикация, получение JWT токена
+
+            std::string scheme;
+            std::string info;
+            long id {-1};
+            std::string login;
+            request.getCredentials(scheme, info);
+            std::cout << "scheme: " << scheme << " identity: " << info << std::endl;
+            if(scheme == "Bearer") 
+            {
+                if(!extract_payload(info,id,login)) 
+                {
+                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                    root->set("type", "/errors/not_authorized");
+                    root->set("title", "Internal exception");
+                    root->set("status", "403");
+                    root->set("detail", "user not authorized");
+                    root->set("instance", "/pizza_order");
+                    std::ostream &ostr = response.send();
+                    Poco::JSON::Stringifier::stringify(root, ostr);
+                    return;                   
+                }
+            }
+            std::cout << "id:" << id << " login:" << login << std::endl;
+
             switch (method)
             {
             case GET:
@@ -211,6 +240,24 @@ public:
                 break;
 
             case PUT:
+                {
+                    database::Post p;
+                    p.id() = atol(form.get("id").c_str());
+                    p.title() = form.get("title");
+                    p.text() = form.get("text");
+                    p.user_id() = atol(form.get("user_id").c_str());
+                    Poco::DateTime now;
+                    p.timestamp() = Poco::DateTimeFormatter::format(now, Poco::DateTimeFormat::ISO8601_FORMAT);
+                    p.update();
+
+                    response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    std::ostream &ostr = response.send();
+                    ostr << p.get_id();
+                }
+                return;
+
                 break;
 
             case DEL:

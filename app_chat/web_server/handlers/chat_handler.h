@@ -61,7 +61,7 @@ static bool hasSubstr(const std::string &str, const std::string &substr)
     return false;
 }
 
-class UserHandler : public HTTPRequestHandler
+class ChatHandler : public HTTPRequestHandler
 {
 private:
     bool check_name(const std::string &name, std::string &reason)
@@ -128,7 +128,7 @@ private:
     }
 
 public:
-    UserHandler(const std::string &format) : _format(format)
+    ChatHandler(const std::string &format) : _format(format)
     {
     }
 
@@ -139,26 +139,82 @@ public:
         HTMLForm form(request, request.stream());
         HttpMethod method = getMethodEnum(request.getMethod());
 
+        if (request.getMethod() == Poco::Net::HTTPRequest::HTTP_OPTIONS)
+        {
+           response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+            response.set("Access-Control-Allow-Origin", "*");
+            response.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            response.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            response.setContentLength(0);
+            response.send();
+            return;
+        }
 
 
         try
         {
+
+            // Аутефикация, получение JWT токена
+
+            std::string scheme;
+            std::string info;
+            long id {-1};
+            std::string login;
+            request.getCredentials(scheme, info);
+            std::cout << "scheme: " << scheme << " identity: " << info << std::endl;
+            if(scheme == "Bearer") 
+            {
+                if(!extract_payload(info,id,login)) 
+                {
+                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                    root->set("type", "/errors/not_authorized");
+                    root->set("title", "Internal exception");
+                    root->set("status", "403");
+                    root->set("detail", "user not authorized");
+                    root->set("instance", "/pizza_order");
+                    std::ostream &ostr = response.send();
+                    Poco::JSON::Stringifier::stringify(root, ostr);
+                    return;                   
+                }
+            }
+            std::cout << "id:" << id << " login:" << login << std::endl;
+
+
             switch (method)
             {
             case GET:
-            if (hasSubstr(request.getURI(), "/chat") && form.has("id"))
+            if (hasSubstr(request.getURI(), "/message") && form.has("id"))
             {
                 long id = atol(form.get("id").c_str());
 
-                std::optional<database::Chat> result = database::Message::read_by_id(id);
+                std::optional<database::Chat> result = database::Chat::read_by_id(id);
                 if (result)
                 {
+                    if (!(result->from_id() == id || result->to_id() == id))
+                    {
+                        response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
+                        response.setChunkedTransferEncoding(true);
+                        response.setContentType("application/json");
+                        response.set("Access-Control-Allow-Origin", "*");
+                        Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                        root->set("type", "/errors/not_authorized");
+                        root->set("title", "Internal exception");
+                        root->set("status", "403");
+                        root->set("detail", "user not authorized");
+                        root->set("instance", "/chat");
+                        std::ostream &ostr = response.send();
+                        Poco::JSON::Stringifier::stringify(root, ostr);
+                        return;
+                    }
                     response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
                     response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     response.set("Access-Control-Allow-Origin", "*");
                     std::ostream &ostr = response.send();
-                    Poco::JSON::Stringifier::stringify(result->toJSON(), ostr);
+                    Poco::JSON::Stringifier::stringify(result->toJson(), ostr);
                     return;
                 }
                 else
@@ -177,19 +233,24 @@ public:
                     Poco::JSON::Stringifier::stringify(root, ostr);
                     return;
                 } 
-            } else if (hasSubstr(request.getURI(), "/chat") && form.has("user_id"))
+            } else if (hasSubstr(request.getURI(), "/chat"))// && form.has("user_id"))
                 {
-                    long to_id = atol(form.get("user_id").c_str());
-                    std::optional<database::Chat> result = database::Message::read_by_to_id(to_id);
+                    //long to_id = atol(form.get("user_id").c_str());
+                    long to_id = id;
+                    std::vector<database::Chat> result = database::Chat::read_by_to_id(to_id);
 
-                    if (result)
+                    if (result.size()>0)
                     {
+                        Poco::JSON::Array arr;
+                        for (auto s : result)
+                            arr.add(s.toJson());
+                        
                         response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
                         response.setChunkedTransferEncoding(true);
                         response.setContentType("application/json");
                         response.set("Access-Control-Allow-Origin", "*");
                         std::ostream &ostr = response.send();
-                        Poco::JSON::Stringifier::stringify(result->toJSON(), ostr);
+                        Poco::JSON::Stringifier::stringify(arr, ostr);
                         return;
                     }
                     else
@@ -215,17 +276,19 @@ public:
                 break;
 
             case POST:
-
-                if (form.has("id") && form.has("from_id") && form.has("to_id") && form.has("text") && form.has("timestampt"))
+                if (form.has("id") && form.has("from_id") && form.has("to_id") && form.has("text"))
                 {
                     database::Chat chat;
                     chat.id() = atol(form.get("id").c_str());
                     chat.from_id() = atol(form.get("from_id").c_str());
                     chat.to_id() = atol(form.get("to_id").c_str());
                     chat.text() = form.get("text");
-                    chat.timestampt() = form.get("timestampt");
+                    Poco::DateTime now;
+                    chat.timestamp() = Poco::DateTimeFormatter::format(now, Poco::DateTimeFormat::ISO8601_FORMAT);
 
+                    std::cout << "in post\n";
                     chat.add();
+                    std::cout << "in post\n";
 
                     response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
                     response.setChunkedTransferEncoding(true);
@@ -240,29 +303,28 @@ public:
                 break;
 
             case PUT:
-                database::Message chat;
-                chat.id() = atol(form.get("id").c_str());
-                chat.from_id() = atol(form.get("from_id").c_str());
-                chat.to_id() = atol(form.get("to_id").c_str());
-                chat.text() = form.get("text");
-                chat.timestampt() = form.get("timestampt");
+                {
+                    database::Chat chat;
+                    chat.id() = atol(form.get("id").c_str());
+                    chat.from_id() = atol(form.get("from_id").c_str());
+                    chat.to_id() = atol(form.get("to_id").c_str());
+                    chat.text() = form.get("text");
+                    chat.timestamp() = form.get("timestamp");
 
-                chat.update();
+                    chat.update();
 
-                response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                response.setChunkedTransferEncoding(true);
-                response.setContentType("application/json");
-                response.set("Access-Control-Allow-Origin", "*");
-                std::ostream &ostr = response.send();
-                ostr << mes.get_id();
-                return;
-            
+                    response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    response.set("Access-Control-Allow-Origin", "*");
+                    std::ostream &ostr = response.send();
+                    ostr << chat.get_id();
+                    return;
+                }
                 break;
             
 
-
             case DEL:
-
                 break;
             
             default:
@@ -282,8 +344,8 @@ public:
         root->set("type", "/errors/not_found");
         root->set("title", "Internal exception");
         root->set("status", Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
-        root->set("detail", "request ot found");
-        root->set("instance", "/user");
+        root->set("detail", "request not found");
+        root->set("instance", "/chat");
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);
     }

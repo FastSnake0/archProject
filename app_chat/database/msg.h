@@ -10,7 +10,7 @@ namespace database
 {
     class Chat{
         private:
-            std::string _id;
+            long _id;
             long _from_id;
             long _to_id;
 
@@ -33,12 +33,12 @@ namespace database
             Poco::JSON::Object::Ptr toJson() const;
 
 
-            std::string&        id();
+            long&               id();
             long&               from_id();
             long&               to_id();
 
             std::string& text();
-            std::string& timestampt();
+            std::string& timestamp();
 
             
 
