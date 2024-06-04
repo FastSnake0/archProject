@@ -39,7 +39,7 @@ namespace database
             std::string&  timestamp();
 
             
-
+            static void init();
             static std::optional<Post> read_by_id(long id);
             static std::vector<Post> read_by_user_id(long user_id);
             void   add(); //to mongo

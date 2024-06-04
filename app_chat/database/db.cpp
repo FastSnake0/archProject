@@ -77,15 +77,12 @@ namespace database{
 
         try
         {
-            std::cout << "good m\n";
 
             Poco::MongoDB::QueryRequest request("arch.chat");
             Poco::MongoDB::ResponseMessage response;
-            std::cout << "good m\n";
             for (auto &[key, val] : params)
                 request.selector().add(key, val);
             connection_mongo.sendRequest(request, response);
-            std::cout << "good m\n";
             for (auto doc : response.documents())
                 result.push_back(doc->toString());
         }

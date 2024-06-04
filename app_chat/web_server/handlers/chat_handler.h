@@ -188,11 +188,12 @@ public:
             case GET:
             if (hasSubstr(request.getURI(), "/message") && form.has("id"))
             {
-                long id = atol(form.get("id").c_str());
+                long chat_id = atol(form.get("id").c_str());
 
                 std::optional<database::Chat> result = database::Chat::read_by_id(id);
                 if (result)
                 {
+                    std::cout << result->from_id() << ":" << result->to_id() << ":" << id;
                     if (!(result->from_id() == id || result->to_id() == id))
                     {
                         response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);

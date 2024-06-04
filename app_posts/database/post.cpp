@@ -107,7 +107,10 @@ namespace database
         return _timestamp;    
     }
 
-
+    void Post::init()
+    {
+        
+    }
 
     std::optional<Post> Post::read_by_id(long id)
     {
