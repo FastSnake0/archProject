@@ -233,9 +233,11 @@ public:
                         response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
                         response.setChunkedTransferEncoding(true);
                         response.setContentType("application/json");
-                        response.set("Access-Control-Allow-Origin", "*");
+
                         std::ostream &ostr = response.send();
-                        ostr << "{ \"id\" : \"" << *id << "\", \"Token\" : \""<< token <<"\"}" << std::endl;
+                        ostr << token;
+                        ostr.flush();
+                        
                         return;
                     }
                 }

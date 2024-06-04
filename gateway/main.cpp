@@ -149,7 +149,7 @@ public:
         std::string base_url_data;
 
         if(std::getenv("POSTS_ADDRESS")) base_url_posts = std::getenv("POSTS_ADDRESS");
-        if(std::getenv("CHAT_ADDRESS")) base_url_posts = std::getenv("CHAT_ADDRESS");
+        if(std::getenv("CHAT_ADDRESS")) base_url_chat = std::getenv("CHAT_ADDRESS");
         if(std::getenv("USER_ADDRESS")) base_url_user = std::getenv("USER_ADDRESS");
 
 
@@ -160,6 +160,9 @@ public:
         else if (hasSubstr(request.getURI(),"/message")||
             hasSubstr(request.getURI(),"/messages"))
             base_url_data = base_url_chat;
+        else if (hasSubstr(request.getURI(),"/user")||
+            hasSubstr(request.getURI(),"/search"))
+            base_url_data = base_url_user;
 
         
         

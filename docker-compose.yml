@@ -134,7 +134,7 @@ services:
     ports:
       - 8888:8888
     networks:
-      - lab05-network
+      - app-network
 
 
 

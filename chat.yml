@@ -3,7 +3,7 @@ info:
   title: Post service
   version: '1.0'
 servers:
-  - url: http://localhost:8082
+  - url: http://localhost:8888
 paths:
   /chat:
      get:
@@ -191,5 +191,9 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    basicAuth:     
+      type: http
+      scheme: basic
 security:
   - bearerAuth: []
+  - basicAuth: []

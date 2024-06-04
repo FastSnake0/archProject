@@ -58,6 +58,7 @@ bool extract_payload(std::string &jwt_token, long &id, std::string &login) {
 
     } catch (...) {
         std::cout << "Token verification failed" << std::endl;
+        std::cout <<"|"<< jwt_token <<"|"<< std::endl;
     }
     return false;
 }

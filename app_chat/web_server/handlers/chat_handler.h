@@ -190,7 +190,7 @@ public:
             {
                 long chat_id = atol(form.get("id").c_str());
 
-                std::optional<database::Chat> result = database::Chat::read_by_id(id);
+                std::optional<database::Chat> result = database::Chat::read_by_id(chat_id);
                 if (result)
                 {
                     std::cout << result->from_id() << ":" << result->to_id() << ":" << id;

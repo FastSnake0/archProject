@@ -131,7 +131,7 @@ public:
                     root->set("title", "Internal exception");
                     root->set("status", "403");
                     root->set("detail", "user not authorized");
-                    root->set("instance", "/pizza_order");
+                    root->set("instance", "/post");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
                     return;                   
