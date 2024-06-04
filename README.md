@@ -17,3 +17,12 @@
 - Загрузка стены пользователя
 - Отправка сообщения пользователю
 - Получение списка сообщения для пользователя
+
+### Описания лабораторных и ход работы:
+ - [x] [ЛР1](documentation/lab0.md)
+ - [x] [ЛР2](documentation/lab1.md)
+ - [x] [ЛР3](documentation/lab2.md)
+ - [x] [ЛР4](documentation/lab3.md)
+  
+ - [ ] [ЛР3](documentation/lab2.md)
+ - [ ] [ЛР4](documentation/lab3.md)

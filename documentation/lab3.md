@@ -14,8 +14,11 @@
 - [x] Dockerfile сервиса
 - [x] Тест Dockerfile
 
+
+
 - [x] Спецификация с OpenAPI с помощью Postman
 - [x] Тест сервиса
 
+Добавлена схема beaver где надо
 
 - [x] github проект
