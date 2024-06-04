@@ -23,6 +23,5 @@
  - [x] [ЛР2](documentation/lab1.md)
  - [x] [ЛР3](documentation/lab2.md)
  - [x] [ЛР4](documentation/lab3.md)
-  
- - [ ] [ЛР3](documentation/lab2.md)
- - [ ] [ЛР4](documentation/lab3.md)
+ - [x] [ЛР5](documentation/lab4.md)
+ - [ ] [ЛР6](documentation/lab5.md)
