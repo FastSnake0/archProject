@@ -47,7 +47,7 @@ using Poco::Util::ServerApplication;
 
 #include "../../database/user.h"
 #include "../../helper.h"
-
+/*
 std::string hashPassword(const std::string& password) {
     
     // Создаем объект для хэширования с использованием алгоритма SHA256
@@ -63,7 +63,7 @@ std::string hashPassword(const std::string& password) {
     encoder.close();
     return oss.str();
 }
-
+//*/
 static bool hasSubstr(const std::string &str, const std::string &substr)
 {
     if (str.size() < substr.size())
@@ -225,7 +225,7 @@ public:
                 {
                     get_identity(info, login, password);
                     std::cout << "(handler) password input:" << password << "\n";
-                    password = hashPassword(password);
+                    password = database::User::hashPassword(password);
                     std::cout << "(handler) password hashed:" << password << "\n";
                     if (auto id = database::User::auth(login, password))
                     {
@@ -333,7 +333,7 @@ public:
                     user.email() = form.get("email");
                     user.title() = form.get("title");
                     user.login() = form.get("login");
-                    user.password() = hashPassword(form.get("password"));
+                    user.password() = database::User::hashPassword(form.get("password"));
 
                     bool check_result = true;
                     std::string message;
@@ -446,7 +446,7 @@ public:
                     }
                     if (form.has("title")) user->title() = form.get("title");
                     if (form.has("login")) user->login() = form.get("login");
-                    if (form.has("password")) user->password() = hashPassword(form.get("password"));
+                    if (form.has("password")) user->password() = database::User::hashPassword(form.get("password"));
 
                     
                

@@ -16,7 +16,7 @@ services:
       POSTGRES_PASSWORD: PWDmeow
       POSTGRES_DB: userdb
     volumes:
-      - dbdata:/var/lib/postgresql/data
+      - dbdata0:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: unless-stopped
@@ -103,7 +103,7 @@ services:
 
 
 volumes:
-  dbdata:
+  dbdata0:
   mongodb:
 
 

@@ -5,13 +5,16 @@
 #include <Poco/Data/RecordSet.h>
 #include <Poco/JSON/Parser.h>
 #include <Poco/Dynamic/Var.h>
-
+#include <Poco/Crypto/DigestEngine.h>
+#include <Poco/HexBinaryEncoder.h>
 #include <sstream>
 #include <exception>
 
 using namespace Poco::Data::Keywords;
 using Poco::Data::Session;
 using Poco::Data::Statement;
+
+
 
 namespace database
 {
@@ -32,7 +35,6 @@ namespace database
                         << "email VARCHAR(256) NULL,"
                         << "title VARCHAR(1024) NULL);",
                         now;
-            // Подсчет количества строк в таблице users
             
         }
 
@@ -46,6 +48,59 @@ namespace database
             std::cout << "connection:" << e.displayText() << std::endl;
             throw;
         }
+        try
+        {
+
+            Poco::Data::Session session = database::Database::get().create_session();
+            Statement select_stmt(session);
+            long rows = 11;
+            select_stmt << "SELECT COUNT(*) FROM users",
+                into(rows),
+                now;
+            std::cout << "rows:" << rows << std::endl;
+            if (rows < 10)
+            {
+                for (size_t i = 0; i < 50; i++)
+                {
+                    Poco::Data::Statement insert(session);
+                    std::string fn = "fntest" + std::to_string(i);
+                    std::string ln = "lntest" + std::to_string(i);
+                    std::string em = std::to_string(i) + "@test.test";
+                    std::string tit = "tittest" + std::to_string(i);
+                    std::string log = "logtest" + std::to_string(i);
+                    std::string pwd = "logtest" + std::to_string(i);
+                    pwd = hashPassword(pwd);
+
+
+                    insert << "INSERT INTO users (first_name,last_name,email,title,login,password) VALUES($1, $2, $3, $4, $5, $6)",
+                        use(fn),
+                        use(ln),
+                        use(em),
+                        use(tit),
+                        use(log),
+                        use(pwd);
+
+                    insert.execute();
+
+
+                }
+                
+            }
+            
+        }
+
+        catch (Poco::Data::PostgreSQL::PostgreSQLException &e)
+        {
+            std::cout << "connection:" << e.displayText() << std::endl;
+            throw;
+        }
+        catch (Poco::Data::ConnectionFailedException &e)
+        {
+            std::cout << "connection:" << e.displayText() << std::endl;
+            throw;
+        }
+
+        
     }
 
     /*
@@ -89,6 +144,24 @@ namespace database
         user.password() = object->getValue<std::string>("password");
 
         return user;
+    }
+
+    std::string User::hashPassword(const std::string &password)
+    {
+        // TODO: insert return statement here
+
+         // Создаем объект для хэширования с использованием алгоритма SHA256
+        Poco::Crypto::DigestEngine engine("SHA256");
+        // Добавляем пароль в DigestEngine
+        engine.update(password);
+        // Получаем результат хэширования в виде вектора байтов
+        const Poco::DigestEngine::Digest& digest = engine.digest();
+        // Преобразуем в строку в шестнадцатеричном формате для удобства
+        std::ostringstream oss;
+        Poco::HexBinaryEncoder encoder(oss);
+        encoder.write(reinterpret_cast<const char*>(digest.data()), digest.size());
+        encoder.close();
+        return oss.str();
     }
 
     /*

@@ -21,6 +21,7 @@ namespace database
         public:
 
             static User fromJSON(const std::string & str);
+            static std::string hashPassword(const std::string& password);
 
             long               get_id() const;
             const std::string &get_first_name() const;
